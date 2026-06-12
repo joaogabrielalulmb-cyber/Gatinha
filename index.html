@@ -135,32 +135,30 @@
             margin-bottom: 5px;
         }
 
-        /* Estilos dos inputs de Data e Hora */
-        .input-group {
+        /* Estilo para as opções de Data e Hora */
+        .pill-group {
             display: flex;
-            flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
             width: 100%;
-            margin-bottom: 15px;
-            text-align: left;
         }
 
-        .input-group label {
-            font-size: 0.95rem;
-            margin-bottom: 8px;
-            margin-left: 5px;
-            font-weight: 600;
-        }
-
-        .input-group input {
+        .pill {
             background-color: #2b1106;
-            color: white;
-            border: 1px solid #ff5722;
-            padding: 12px 15px;
+            padding: 10px 18px;
             border-radius: 20px;
-            font-size: 1.1rem;
-            outline: none;
-            font-family: 'Fredoka', sans-serif;
-            color-scheme: dark; /* Adapta o ícone de calendário para modo escuro */
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .pill:hover, .pill.selected {
+            border-color: #ff5722;
+            background-color: #ff5722;
         }
 
         .summary-list {
@@ -186,7 +184,6 @@
 
     <div class="hearts-bg" id="hearts-bg"></div>
 
-    <!-- TELA 1: Convite -->
     <div id="screen1" class="screen active">
         <div class="emoji-top">🥺</div>
         <h1>VOCÊ ACEITARIA IR À UM DATE COMIGO?</h1>
@@ -196,7 +193,6 @@
         </div>
     </div>
 
-    <!-- TELA 2: Confirmação -->
     <div id="screen2" class="screen">
         <div class="emoji-top">😏</div>
         <h1>VOCÊ DISSE SIM? 🥺</h1>
@@ -204,7 +200,6 @@
         <button onclick="nextScreen(3)">PRÓXIMO 💙</button>
     </div>
 
-    <!-- TELA 3: Escolha do Role -->
     <div id="screen3" class="screen">
         <div class="emoji-top">😋</div>
         <h1>O QUE TÁ AFIM?</h1>
@@ -230,25 +225,27 @@
         <button onclick="checkFoodChoice()">ESCOLHER ✨</button>
     </div>
 
-    <!-- TELA 4: Data e Hora (Aparece se NÃO for cinema) -->
     <div id="screen4" class="screen">
         <div class="emoji-top">🗓️</div>
         <h1>QUANDO VOCÊ TÁ LIVRE?</h1>
         
-        <div class="input-group">
-            <label>Escolhe a data</label>
-            <input type="date" id="date-input">
+        <p style="margin-bottom: 10px; font-weight: 600; width: 100%; text-align: left; margin-left: 10px;">Qual dia?</p>
+        <div class="pill-group" id="day-group">
+            <div class="pill" onclick="selectDay('Sexta', this)">Sexta</div>
+            <div class="pill" onclick="selectDay('Sábado', this)">Sábado</div>
+            <div class="pill" onclick="selectDay('Domingo', this)">Domingo</div>
         </div>
         
-        <div class="input-group">
-            <label>Escolhe o horário</label>
-            <input type="time" id="time-input" value="19:00">
+        <p style="margin-bottom: 10px; font-weight: 600; width: 100%; text-align: left; margin-left: 10px;">Que horas?</p>
+        <div class="pill-group" id="time-group">
+            <div class="pill" onclick="selectTime('18:00', this)">18h</div>
+            <div class="pill" onclick="selectTime('19:00', this)">19h</div>
+            <div class="pill" onclick="selectTime('20:00', this)">20h</div>
         </div>
 
         <button onclick="confirmDate()" style="margin-top: 10px;">SELECIONAR A DATA 💜</button>
     </div>
 
-    <!-- TELA 5: Resumo Final -->
     <div id="screen5" class="screen">
         <div class="emoji-top">🐧</div>
         <h1>TÔ CONTIGO, GATINHA. 💙</h1>
@@ -257,7 +254,7 @@
         <ul class="summary-list">
             <li>✅ <strong>Resposta:</strong> Aceitou o Date</li>
             <li>🍽️ <strong>Escolha:</strong> <span id="final-food">...</span></li>
-            <li>📅 <strong>Data:</strong> <span id="final-date">...</span></li>
+            <li>📅 <strong>Dia:</strong> <span id="final-date">...</span></li>
             <li>⏰ <strong>Horário:</strong> <span id="final-time">...</span></li>
         </ul>
 
@@ -318,12 +315,27 @@
         }
 
         let selectedFood = '';
-        let selectedDate = '';
+        let selectedDay = '';
         let selectedTime = '';
 
+        // Selecionar Comida
         function selectOption(food, element) {
             selectedFood = food;
             document.querySelectorAll('.option-card').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // Selecionar Dia
+        function selectDay(day, element) {
+            selectedDay = day;
+            document.querySelectorAll('#day-group .pill').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // Selecionar Hora
+        function selectTime(time, element) {
+            selectedTime = time;
+            document.querySelectorAll('#time-group .pill').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
         }
 
@@ -333,31 +345,21 @@
                 return;
             }
 
-            // Se for Cineminha, define as mensagens e pula a tela de Data (vai pra Tela 5)
             if (selectedFood === 'Cineminha') {
-                selectedDate = "Deixa comigo 😎";
-                selectedTime = "Eu escolho o filme e tudo 🍿";
+                selectedDay = "Deixa comigo 😎";
+                selectedTime = "Eu escolho tudo 🍿";
                 updateFinalSummary();
                 nextScreen(5);
             } else {
-                // Se for comida, vai pra tela de Escolher Data/Hora (Tela 4)
                 nextScreen(4);
             }
         }
 
         function confirmDate() {
-            const dateInput = document.getElementById('date-input').value;
-            const timeInput = document.getElementById('time-input').value;
-
-            if (!dateInput || !timeInput) {
-                alert("Preenche a data e o horário, gatinha! 🥺");
+            if (!selectedDay || !selectedTime) {
+                alert("Escolha um dia e um horário, gatinha! 🥺");
                 return;
             }
-
-            // Converte o formato da data de AAAA-MM-DD para DD/MM/AAAA
-            const partes = dateInput.split('-');
-            selectedDate = `${partes[2]}/${partes[1]}/${partes[0]}`;
-            selectedTime = timeInput;
 
             updateFinalSummary();
             nextScreen(5);
@@ -365,7 +367,7 @@
 
         function updateFinalSummary() {
             document.getElementById('final-food').innerText = selectedFood;
-            document.getElementById('final-date').innerText = selectedDate;
+            document.getElementById('final-date').innerText = selectedDay;
             document.getElementById('final-time').innerText = selectedTime;
         }
 
@@ -377,7 +379,7 @@
             if (selectedFood === 'Cineminha') {
                 mensagem += `Escolhi *Cineminha*! 🍿%0AComo combinamos, você escolhe o filme, o dia e tudo! Tô te esperando. 🚗`;
             } else {
-                mensagem += `Acho uma boa ideia a gente ir comer *${selectedFood}*%0A%0AMarquei para o dia *${selectedDate}* às *${selectedTime}*.%0A%0ATô te esperando! 🚗`;
+                mensagem += `Acho uma boa ideia a gente ir comer *${selectedFood}*%0A%0APode ser no *${selectedDay}* às *${selectedTime}*.%0A%0ATô te esperando! 🚗`;
             }
             
             const url = `https://api.whatsapp.com/send?phone=${meuNumero}&text=${mensagem}`;
