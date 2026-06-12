@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convite Especial</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        body {
+            background-color: #e33b1e;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Fundo de Corações */
+        .hearts-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: -50px;
+            pointer-events: none;
+            animation: floatUp linear forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-115vh) rotate(360deg); opacity: 0; }
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 90%;
+            max-width: 400px;
+            background-color: #5c2c16;
+            padding: 30px 20px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            z-index: 10;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .emoji-top {
+            font-size: 5rem;
+            margin-bottom: 10px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        button {
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #btn-nao {
+            position: relative;
+            transition: left 0.2s ease, top 0.2s ease;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .option-card {
+            background-color: #4a2311;
+            padding: 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .option-card:hover, .option-card.selected {
+            border-color: #ff5722;
+            background-color: #381a0c;
+        }
+
+        .option-icon {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+
+        /* Estilos dos inputs de Data e Hora */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            margin-left: 5px;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            background-color: #2b1106;
+            color: white;
+            border: 1px solid #ff5722;
+            padding: 12px 15px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            outline: none;
+            font-family: 'Fredoka', sans-serif;
+            color-scheme: dark; /* Adapta o ícone de calendário para modo escuro */
+        }
+
+        .summary-list {
+            list-style: none;
+            margin: 20px 0;
+            text-align: left;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .summary-list li {
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hearts-bg" id="hearts-bg"></div>
+
+    <!-- TELA 1: Convite -->
+    <div id="screen1" class="screen active">
+        <div class="emoji-top">🥺</div>
+        <h1>VOCÊ ACEITARIA IR À UM DATE COMIGO?</h1>
+        <div class="btn-group">
+            <button onclick="nextScreen(2)">SIM</button>
+            <button id="btn-nao">NÃO</button>
+        </div>
+    </div>
+
+    <!-- TELA 2: Confirmação -->
+    <div id="screen2" class="screen">
+        <div class="emoji-top">😏</div>
+        <h1>VOCÊ DISSE SIM? 🥺</h1>
+        <p style="font-size: 0.9rem; margin-bottom: 20px;">Eu estava esperando você dizer não kkkk</p>
+        <button onclick="nextScreen(3)">PRÓXIMO 💙</button>
+    </div>
+
+    <!-- TELA 3: Escolha do Role -->
+    <div id="screen3" class="screen">
+        <div class="emoji-top">😋</div>
+        <h1>O QUE TÁ AFIM?</h1>
+        <div class="options-grid">
+            <div class="option-card" onclick="selectOption('Cineminha', this)">
+                <div class="option-icon">🍿</div>
+                <div>Cineminha</div>
+            </div>
+            <div class="option-card" onclick="selectOption('Pizza', this)">
+                <div class="option-icon">🍕</div>
+                <div>Pizza</div>
+            </div>
+            <div class="option-card" onclick="selectOption('Hambúrguer', this)">
+                <div class="option-icon">🍔</div>
+                <div>Hambúrguer</div>
+            </div>
+            <div class="option-card" onclick="selectOption('Sushi', this)">
+                <div class="option-icon">🍣</div>
+                <div>Sushi</div>
+            </div>
+        </div>
+        <br>
+        <button onclick="checkFoodChoice()">ESCOLHER ✨</button>
+    </div>
+
+    <!-- TELA 4: Data e Hora (Aparece se NÃO for cinema) -->
+    <div id="screen4" class="screen">
+        <div class="emoji-top">🗓️</div>
+        <h1>QUANDO VOCÊ TÁ LIVRE?</h1>
+        
+        <div class="input-group">
+            <label>Escolhe a data</label>
+            <input type="date" id="date-input">
+        </div>
+        
+        <div class="input-group">
+            <label>Escolhe o horário</label>
+            <input type="time" id="time-input" value="19:00">
+        </div>
+
+        <button onclick="confirmDate()" style="margin-top: 10px;">SELECIONAR A DATA 💜</button>
+    </div>
+
+    <!-- TELA 5: Resumo Final -->
+    <div id="screen5" class="screen">
+        <div class="emoji-top">🐧</div>
+        <h1>TÔ CONTIGO, GATINHA. 💙</h1>
+        <p>Fica pronta que eu vou te buscar 🚗</p>
+        
+        <ul class="summary-list">
+            <li>✅ <strong>Resposta:</strong> Aceitou o Date</li>
+            <li>🍽️ <strong>Escolha:</strong> <span id="final-food">...</span></li>
+            <li>📅 <strong>Data:</strong> <span id="final-date">...</span></li>
+            <li>⏰ <strong>Horário:</strong> <span id="final-time">...</span></li>
+        </ul>
+
+        <button onclick="sendToWhatsApp()">MANDAR PARA ELE 📱</button>
+    </div>
+
+    <script>
+        // --- Animação dos corações ---
+        const heartsContainer = document.getElementById('hearts-bg');
+        
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.innerText = '🖤';
+            
+            const startX = Math.random() * window.innerWidth;
+            const size = Math.random() * 24 + 16; 
+            const duration = Math.random() * 4 + 4; 
+            
+            heart.style.left = startX + 'px';
+            heart.style.fontSize = size + 'px';
+            heart.style.animationDuration = duration + 's';
+            
+            heartsContainer.appendChild(heart);
+            setTimeout(() => heart.remove(), duration * 1000);
+        }
+        setInterval(createHeart, 250);
+
+        // --- Botão Fujão ---
+        const btnNao = document.getElementById('btn-nao');
+        const frasesNao = ["Tem certeza?", "Clica no SIM!", "Ah, vai...", "Para de fugir!", "Repensa aí...", "Nem tente kkk"];
+        let clickCount = 0;
+
+        function moveButton(e) {
+            e.preventDefault(); 
+            btnNao.style.position = 'absolute';
+            
+            const maxX = window.innerWidth - btnNao.offsetWidth - 20;
+            const maxY = window.innerHeight - btnNao.offsetHeight - 20;
+            
+            const randomX = Math.max(10, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(10, Math.floor(Math.random() * maxY));
+            
+            btnNao.style.left = randomX + 'px';
+            btnNao.style.top = randomY + 'px';
+
+            btnNao.innerText = frasesNao[clickCount % frasesNao.length];
+            clickCount++;
+        }
+
+        btnNao.addEventListener('mouseover', moveButton);
+        btnNao.addEventListener('touchstart', moveButton);
+
+        // --- Navegação e Lógica de Seleção ---
+        function nextScreen(screenNumber) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen' + screenNumber).classList.add('active');
+        }
+
+        let selectedFood = '';
+        let selectedDate = '';
+        let selectedTime = '';
+
+        function selectOption(food, element) {
+            selectedFood = food;
+            document.querySelectorAll('.option-card').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function checkFoodChoice() {
+            if (!selectedFood) {
+                alert("Escolha uma opção primeiro! 👀");
+                return;
+            }
+
+            // Se for Cineminha, define as mensagens e pula a tela de Data (vai pra Tela 5)
+            if (selectedFood === 'Cineminha') {
+                selectedDate = "Deixa comigo 😎";
+                selectedTime = "Eu escolho o filme e tudo 🍿";
+                updateFinalSummary();
+                nextScreen(5);
+            } else {
+                // Se for comida, vai pra tela de Escolher Data/Hora (Tela 4)
+                nextScreen(4);
+            }
+        }
+
+        function confirmDate() {
+            const dateInput = document.getElementById('date-input').value;
+            const timeInput = document.getElementById('time-input').value;
+
+            if (!dateInput || !timeInput) {
+                alert("Preenche a data e o horário, gatinha! 🥺");
+                return;
+            }
+
+            // Converte o formato da data de AAAA-MM-DD para DD/MM/AAAA
+            const partes = dateInput.split('-');
+            selectedDate = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            selectedTime = timeInput;
+
+            updateFinalSummary();
+            nextScreen(5);
+        }
+
+        function updateFinalSummary() {
+            document.getElementById('final-food').innerText = selectedFood;
+            document.getElementById('final-date').innerText = selectedDate;
+            document.getElementById('final-time').innerText = selectedTime;
+        }
+
+        // --- Envio WhatsApp ---
+        function sendToWhatsApp() {
+            const meuNumero = "5585985380940"; 
+            let mensagem = `Oii! Eu disse SIM pro date! 🥰%0A%0A`;
+            
+            if (selectedFood === 'Cineminha') {
+                mensagem += `Escolhi *Cineminha*! 🍿%0AComo combinamos, você escolhe o filme, o dia e tudo! Tô te esperando. 🚗`;
+            } else {
+                mensagem += `Acho uma boa ideia a gente ir comer *${selectedFood}*%0A%0AMarquei para o dia *${selectedDate}* às *${selectedTime}*.%0A%0ATô te esperando! 🚗`;
+            }
+            
+            const url = `https://api.whatsapp.com/send?phone=${meuNumero}&text=${mensagem}`;
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
